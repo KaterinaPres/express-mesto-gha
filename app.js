@@ -14,10 +14,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
   // useCreateIndex: true,
   // useFindAndModify: false
-}, (err) => {
-  if (err) throw err;
-  /* eslint-disable no-console */
-  console.log('Соединение с MongoDB!!!');
 });
 
 app.use((req, res, next) => {
@@ -31,7 +27,7 @@ app.use((req, res, next) => {
 app.use('/', routerUsersMy);
 app.use('/', routerCardsMy);
 app.use('*', (req, res) => {
-  res.status(404).send('Извините, такого роута не существует');
+  res.status(404).send({ message: 'Извините, такого роута не существует' });
 });
 
 app.listen(PORT, () => {
