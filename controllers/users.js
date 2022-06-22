@@ -50,7 +50,6 @@ module.exports.getUserByID = (req, res) => {
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
-      
         return;
       }
       res.status(200).send({ data: user });
