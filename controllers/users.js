@@ -1,9 +1,10 @@
 const userMy = require('../models/user');
+const { ERROR_BAD, ERROR_NOTFOUND, SOME_ERROR } = require('../err');
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   if (!avatar) {
-    res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
+    res.status(ERROR_BAD.code).send({ message: ERROR_BAD.messageUser });
   }
   userMy.findByIdAndUpdate(
     req.user._id,
@@ -12,24 +13,24 @@ module.exports.updateAvatar = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(ERROR_NOTFOUND.code).send({ message: ERROR_NOTFOUND.messageUser });
         return;
       }
       res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
+        res.status(ERROR_BAD.code).send({ message: ERROR_BAD.messageUser });
         return;
       }
-      res.status(500).send({ message: 'Ошибка по умолчанию' });
+      res.status(SOME_ERROR.code).send({ message: SOME_ERROR.message });
     });
 };
 
 module.exports.getUser = (req, res) => {
   userMy.find({})
     .then((user) => res.status(200).send({ data: user }))
-    .catch(() => res.status(400).send({ message: 'Запрашиваемый пользователь не найден' }));
+    .catch(() => res.status(SOME_ERROR.code).send({ message: SOME_ERROR.message }));
 };
 
 module.exports.createUser = (req, res) => {
@@ -38,10 +39,10 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
+        res.status(ERROR_BAD.code).send({ message: ERROR_BAD.messageUser });
         return;
       }
-      res.status(404).send({ message: ' Запрашиваемый пользователь не найден' });
+      res.status(SOME_ERROR.code).send({ message: SOME_ERROR.message });
     });
 };
 
@@ -49,39 +50,39 @@ module.exports.getUserByID = (req, res) => {
   userMy.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
+        res.status(ERROR_NOTFOUND.code).send({ message: ERROR_NOTFOUND.messageUser });
         return;
       }
       res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
+        res.status(ERROR_BAD.code).send({ message: ERROR_BAD.messageUser });
         return;
       }
-      res.status(500).send({ message: 'Ошибка по умолчанию' });
+      res.status(SOME_ERROR.code).send({ message: SOME_ERROR.message });
     });
 };
 
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   userMy.findByIdAndUpdate(
-    req.user._id, // временное решение авторизации (req.user._id)
+    req.user._id,
     { name, about },
     { new: true, runValidators: true, upsert: false },
   )
     .then((user) => {
       if (!user) {
-        res.status(400).send({ message: 'Пользователь по указанному _id не найден' });
+        res.status(ERROR_BAD.code).send({ message: ERROR_BAD.messageUser });
         return;
       }
       res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
+        res.status(ERROR_BAD.code).send({ message: ERROR_BAD.messageUser });
         return;
       }
-      res.status(500).send({ message: 'Ошибка по-умолчанию' });
+      res.status(SOME_ERROR.code).send({ message: SOME_ERROR.message });
     });
 };

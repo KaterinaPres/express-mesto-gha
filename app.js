@@ -7,6 +7,8 @@ const routerCardsMy = require('./routes/cards');
 const { PORT = 3000 } = process.env;
 const app = express();
 
+mongoose.set('useFindAndModify', false);
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

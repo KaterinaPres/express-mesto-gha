@@ -1,4 +1,5 @@
 const cardMy = require('../models/card');
+const { ERROR_BAD, ERROR_NOTFOUND, SOME_ERROR } = require('../err');
 
 module.exports.createCard = (req, res) => {
   const ownerMy = req.user._id;
@@ -7,35 +8,33 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.status(200).send({ card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ data: err, message: 'Переданы некорректные данные при создании карточки' });
+        res.status(ERROR_BAD.code).send({ message: ERROR_BAD.messageCard });
       }
     });
-  // console.log(req.user._id);
 };
 
 module.exports.deleteCard = (req, res) => {
   cardMy.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        // console.log(req.user._id);
-        res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
+        res.status(ERROR_NOTFOUND.code).send({ message: ERROR_NOTFOUND.messageCard });
         return;
       }
       res.status(200).send({ card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ data: err, message: 'Переданы некорректные данные' });
+        res.status(ERROR_BAD.code).send({ data: err, message: ERROR_BAD.messageCard });
         return;
       }
-      res.status(500).send({ message: 'Ошибка по умолчанию' });
+      res.status(SOME_ERROR.code).send({ message: SOME_ERROR.message });
     });
 };
 
 module.exports.getCard = (req, res) => {
   cardMy.find({})
     .then((cards) => res.status(200).send({ cards }))
-    .catch(() => res.status(404).send({ message: 'Запрашиваемая карточка не найдена' }));
+    .catch(() => res.status(SOME_ERROR.code).send({ message: SOME_ERROR.message }));
 };
 
 module.exports.likeCard = (req, res) => {
@@ -46,17 +45,17 @@ module.exports.likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
+        res.status(ERROR_NOTFOUND).send({ message: ERROR_NOTFOUND.messageLike });
         return;
       }
       res.status(200).send({ card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        res.status(ERROR_BAD.code).send({ message: ERROR_BAD.messageLike });
         return;
       }
-      res.status(500).send({ message: 'Ошибка по умолчанию' });
+      res.status(SOME_ERROR.code).send({ message: SOME_ERROR.message });
     });
 };
 
@@ -68,16 +67,16 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(ERROR_NOTFOUND.code).send({ message: ERROR_NOTFOUND.messageLike });
         return;
       }
       res.status(200).send({ card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        res.status(ERROR_BAD.code).send({ message: ERROR_BAD.messageLike });
         return;
       }
-      res.status(500).send({ message: 'Ошибка по умолчанию' });
+      res.status(SOME_ERROR.code).send({ message: SOME_ERROR.message });
     });
 };
