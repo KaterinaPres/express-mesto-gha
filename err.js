@@ -6,8 +6,4 @@ const ERROR_NOTFOUND = {
 };
 const SOME_ERROR = { code: 500, message: 'Ошибка по-умолчанию' };
 
-module.exports = {
-  ERROR_BAD,
-  ERROR_NOTFOUND,
-  SOME_ERROR,
-};
+module.exports = {ERROR_BAD, ERROR_NOTFOUND, SOME_ERROR};
