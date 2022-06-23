@@ -45,7 +45,7 @@ module.exports.likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(ERROR_NOTFOUND).send({ message: ERROR_NOTFOUND.messageLike });
+        res.status(ERROR_NOTFOUND.code).send({ message: ERROR_NOTFOUND.messageLike });
         return;
       }
       res.status(200).send({ card });
