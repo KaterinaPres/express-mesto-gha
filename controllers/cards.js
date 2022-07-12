@@ -81,16 +81,16 @@ module.exports.dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(NotFoundError.code).send({ message: NotFoundError.messageLike });
-        return;
+        throw new NotFoundError('Передан несуществующий _id карточки');
       }
       res.status(200).send({ card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BadError.code).send({ message: BadError.messageLike });
-        return;
+        throw new BadRequestError('Переданы некорректные данные для постановки/снятия лайка');
+      } else {
+        next(err);
       }
-      res.status(SomeError.code).send({ message: SomeError.message });
-    });
+    })
+    .catch(next);
 };

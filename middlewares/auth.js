@@ -6,15 +6,14 @@ module.exports = (req, res, next) => {
 // const auth = (req, res, next) => {
   const authMy = req.cookies.jwt;
   if (!authMy) {
-    next(new NotAutorization('Необходима авторизация для доступа'));
-    return;
+    throw new NotAutorization(NotAutorization.message);
+    // next(new NotAutorization('Необходима авторизация для доступа'));
+    // return;
   }
-//   const token = auth.replace('Bearer ', '');
   let payload;
-
   try {
     payload = checkToken(token);
-    User.findOne({ _id: payload._id })
+    userMy.findOne({ _id: payload._id })
     .then((user) => {
       if (!user) {
         throw new NotAutorization(NotAutorization.message);
