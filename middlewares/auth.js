@@ -14,14 +14,14 @@ module.exports = (req, res, next) => {
   try {
     payload = checkToken(token);
     userMy.findOne({ _id: payload._id })
-    .then((user) => {
-      if (!user) {
-        throw new NotAutorization(NotAutorization.message);
-      }
-      req.user = { _id: user._id };
-      next();
-    })
-    .catch(next);
+      .then((user) => {
+        if (!user) {
+          throw new NotAutorization(NotAutorization.message);
+        }
+        req.user = { _id: user._id };
+        next();
+      })
+      .catch(next);
   } catch (err) {
     next(new NotAutorization('Необходима авторизация для доступа'));
   }

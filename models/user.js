@@ -37,10 +37,10 @@ const userSchema = new mongoose.Schema({
 userSchema.statics.findUser = function (email, password) {
   return this.findOne({ email }).select('+password') // this — это модель User
     .then((user) => {
-      if (!user) { return Promise.reject(new Error('Неверные почта или пароль'));}
+      if (!user) { return Promise.reject(new Error('Неверные почта или пароль')); }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
-          if (!matched) { return Promise.reject(new Error('Неверные почта или пароль'));}
+          if (!matched) { return Promise.reject(new Error('Неверные почта или пароль')); }
           return user;
         });
     });

@@ -1,15 +1,15 @@
-const userMy = require('../models/user');
 const bcrypt = require('bcrypt');
 const validator = require('validator');
+const userMy = require('../models/user');
 const { generateToken } = require('../token/jwt');
 require('dotenv').config();
 // const { BadError, NotFoundError, SomeError } = require('../err');
 const { MONGO_ERROR } = require('../token/MongoError');
 const BadError = require('../errors/BadError'); // 400
-// const NotAutorization = require('../errors/NotAutorization'); // 401
+const NotAutorization = require('../errors/NotAutorization'); // 401
 const NotFoundError = require('../errors/NotFoundError'); // 404
 const Mongo = require('../errors/Mongo'); // 409
-const SomeError = require('../errors/SomeError'); // 500
+// const SomeError = require('../errors/SomeError'); 
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
@@ -45,32 +45,34 @@ module.exports.getUser = (req, res, next) => {
 
 module.exports.createUser = (req, res, next) => {
   if (validator.isEmail(req.body.email)) {
-  const { name, about, avatar, email, password, } = req.body;
-  bcrypt
-    .hash(password, 10)
-    .then((hash) => userMy.create({
-      name, about, avatar, email, password: hash,
-    }))
-    .then((user) => res.status(201).send({
-      name: user.name, about: user.about, email: user.email, avatar: user.avatar,
-    }))
-    .catch((err) => {
-      if (err.code === MONGO_ERROR) {
-        throw new Mongo(Mongo.message);
-      }
-      if (err.name === 'BadError') {
-        throw new BadError('Переданы некорректные данные при создании пользователя');
-      } else {
-        next(err);
-      }
-    })
-    .catch(next);
-} else {
-  throw new NotAutorization('Некорректно указан Email');
-}
+    const {
+      name, about, avatar, email, password,
+    } = req.body;
+    bcrypt
+      .hash(password, 10)
+      .then((hash) => userMy.create({
+        name, about, avatar, email, password: hash,
+      }))
+      .then((user) => res.status(201).send({
+        name: user.name, about: user.about, email: user.email, avatar: user.avatar,
+      }))
+      .catch((err) => {
+        if (err.code === MONGO_ERROR) {
+          throw new Mongo(Mongo.message);
+        }
+        if (err.name === 'BadError') {
+          throw new BadError('Переданы некорректные данные при создании пользователя');
+        } else {
+          next(err);
+        }
+      })
+      .catch(next);
+  } else {
+    throw new NotAutorization('Некорректно указан Email');
+  }
 };
 
-module.exports.getUserByID = (req, res) => {
+module.exports.getUserByID = (req, res, next) => {
   userMy.findById(req.params.userId)
     .then((user) => {
       if (!user) {

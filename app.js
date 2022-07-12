@@ -2,11 +2,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const { celebrate, Joi, errors } = require('celebrate');
 const routerUsersMy = require('./routes/users');
 const routerCardsMy = require('./routes/cards');
-const { celebrate, Joi, errors } = require('celebrate');
-const { login, createUser } = require('./controllers/user');
-const NotFoundError = require('./errors/not-found-err');
+const { login, createUser } = require('./controllers/users');
+const NotFoundError = require('./errors/NotFoundError');
 const auth = require('./middlewares/auth');
 require('dotenv').config();
 // Слушаем 3000 порт
@@ -29,6 +29,7 @@ app.post('/signin', celebrate({
     password: Joi.string().min(3).required(),
   }),
 }), login);
+
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
@@ -46,7 +47,8 @@ app.use('/', routerCardsMy);
 app.use('*', (req, res) => {
   throw new NotFoundError('Страница не была найдена');
 });
-app.use((err, req, res) => {
+
+app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res
     .status(statusCode)

@@ -4,7 +4,7 @@ const NotFoundError = require('../errors/NotFoundError'); // 404
 const SomeError = require('../errors/SomeError'); // 500
 const ForbiddenError = require('../errors/ForbiddenError'); // 403
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const ownerMy = req.user._id.toString();
   const { name, link } = req.body;
   cardMy.create({ name, link, owner: ownerMy })
@@ -66,11 +66,11 @@ module.exports.likeCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new BadError('Переданы некорректные данные для постановки/снятия лайка');
-    } else {
-      next(err);
-    }
-  })
-  .catch(next);
+      } else {
+        next(err);
+      }
+    })
+    .catch(next);
 };
 
 module.exports.dislikeCard = (req, res, next) => {
