@@ -113,12 +113,6 @@ module.exports.updateUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getProfileUser = (req, res, next) => {
-  userMy.findById(req.user._id)
-    .then((user) => res.status(200).send({ user }))
-    .catch(next);
-};
-
 module.exports.login = (req, res, next) => {
   if (validator.isEmail(req.body.email)) {
     const { email, password } = req.body;

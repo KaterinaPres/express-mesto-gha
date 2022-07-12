@@ -2,13 +2,13 @@ const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const { regUrl } = require('../token/MongoError');
 const {
-  getUser, getUserByID, updateUser, updateAvatar,
+  getUser, getUserMe, getUserByID, updateUser, updateAvatar,
 } = require('../controllers/users');
 
 // const regUrl = "/https?:\/\/(www\.)?[-a-z0-9-._~:/?#@!$&'()*+,;=]+/;";
 
 router.get('/users', getUser);
-// router.get('/me', getUserMe);
+router.get('/me', getUserMe);
 
 router.get('/users/:userId', celebrate({
   params: Joi.object().keys({ userId: Joi.string().hex().length(24) }),
