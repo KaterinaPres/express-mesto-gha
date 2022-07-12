@@ -132,3 +132,9 @@ module.exports.login = (req, res, next) => {
   }
   throw new BadError('Некорректно указан Email');
 };
+
+module.exports.getUserMe = (req, res, next) => {
+  userMy.findById(req.user._id)
+    .then((user) => res.status(200).send({ user }))
+    .catch(next);
+};
