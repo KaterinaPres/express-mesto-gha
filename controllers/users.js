@@ -9,7 +9,7 @@ const BadError = require('../errors/BadError'); // 400
 const NotAutorization = require('../errors/NotAutorization'); // 401
 const NotFoundError = require('../errors/NotFoundError'); // 404
 const Mongo = require('../errors/Mongo'); // 409
-const SomeError = require('../errors/SomeError');
+// const SomeError = require('../errors/SomeError');
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
