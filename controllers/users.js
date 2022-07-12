@@ -9,7 +9,7 @@ const BadError = require('../errors/BadError'); // 400
 const NotAutorization = require('../errors/NotAutorization'); // 401
 const NotFoundError = require('../errors/NotFoundError'); // 404
 const Mongo = require('../errors/Mongo'); // 409
-// const SomeError = require('../errors/SomeError'); 
+// const SomeError = require('../errors/SomeError');
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
@@ -122,7 +122,7 @@ module.exports.getProfileUser = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   if (validator.isEmail(req.body.email)) {
     const { email, password } = req.body;
-    return User.findUser(email, password)
+    return userMy.findUser(email, password)
       .then((user) => {
         const token = generateToken({ _id: user._id });
         res.cookie('jwt', token, {

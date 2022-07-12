@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
   }
   let payload;
   try {
-    payload = checkToken(token);
+    payload = checkToken(authMy);
     userMy.findOne({ _id: payload._id })
       .then((user) => {
         if (!user) {

@@ -44,11 +44,11 @@ app.use(auth);
 app.use(errors());
 app.use('/', routerUsersMy);
 app.use('/', routerCardsMy);
-app.use('*', (req, res) => {
+app.use('*', () => {
   throw new NotFoundError('Страница не была найдена');
 });
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   const { statusCode = 500, message } = err;
   res
     .status(statusCode)

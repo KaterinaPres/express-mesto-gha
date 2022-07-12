@@ -1,7 +1,7 @@
 const cardMy = require('../models/card');
 const BadError = require('../errors/BadError'); // 400
 const NotFoundError = require('../errors/NotFoundError'); // 404
-const SomeError = require('../errors/SomeError'); // 500
+// const SomeError = require('../errors/SomeError');
 const ForbiddenError = require('../errors/ForbiddenError'); // 403
 
 module.exports.createCard = (req, res, next) => {
@@ -45,13 +45,13 @@ module.exports.deleteCard = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getCard = (req, res) => {
+module.exports.getCard = (req, res, next) => {
   cardMy.find({})
     .then((cards) => res.status(200).send({ cards }))
     .catch(next);
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   cardMy.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -64,7 +64,7 @@ module.exports.likeCard = (req, res) => {
       res.status(200).send({ card });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'BadError') {
         throw new BadError('Переданы некорректные данные для постановки/снятия лайка');
       } else {
         next(err);
@@ -86,8 +86,8 @@ module.exports.dislikeCard = (req, res, next) => {
       res.status(200).send({ card });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные для постановки/снятия лайка');
+      if (err.name === 'BadError') {
+        throw new BadError('Переданы некорректные данные для постановки/снятия лайка');
       } else {
         next(err);
       }
