@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const { regUrl } = require('../token/MongoError');
 const {
-  getUser, getUserMe, getUserByID, updateUser, updateAvatar,
+  getUser, getUserByID, updateUser, updateAvatar,
 } = require('../controllers/users');
 
 // const regUrl = "/https?:\/\/(www\.)?[-a-z0-9-._~:/?#@!$&'()*+,;=]+/;";
