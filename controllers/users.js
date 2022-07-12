@@ -9,7 +9,7 @@ const BadError = require('../errors/BadError'); // 400
 const NotAutorization = require('../errors/NotAutorization'); // 401
 const NotFoundError = require('../errors/NotFoundError'); // 404
 const Mongo = require('../errors/Mongo'); // 409
-// const SomeError = require('../errors/SomeError');
+const SomeError = require('../errors/SomeError');
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
@@ -76,13 +76,13 @@ module.exports.getUserByID = (req, res, next) => {
   userMy.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь по указанному _id не найден');
+        throw new SomeError('Пользователь по указанному _id не найден');
       }
       res.status(200).send({ user });
     })
     .catch((err) => {
-      if (err.name === 'BadError') {
-        throw new BadError('Переданы некорректные данные');
+      if (err.name === 'NotFoundError') {
+        throw new NotFoundError('Переданы некорректные данные');
       } else {
         next(err);
       }
