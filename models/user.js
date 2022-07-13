@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.statics.findUser = function (email, password) {
-  return this.findOne({ email }).select('+password') // this — это модель User
+  return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) { return Promise.reject(new Error('Неверные почта или пароль')); }
       return bcrypt.compare(password, user.password)

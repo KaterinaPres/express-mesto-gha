@@ -23,13 +23,14 @@ module.exports.updateAvatar = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь по указанному _id не найден');
+        next(new NotFoundError('Пользователь по указанному _id не найден'));
       }
       res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'BadError') {
         next(new BadError('Переданы некорректные данные при создании карточки'));
+        return;
       }
       next(err);
     });
@@ -56,10 +57,12 @@ module.exports.createUser = (req, res, next) => {
       }))
       .catch((err) => {
         if (err.code === MONGO_ERROR) {
-          throw new Mongo(Mongo.message);
+          next(new Mongo(Mongo.message));
+          return;
         }
         if (err.name === 'BadError') {
           next(new BadError('Переданы некорректные данные при создании карточки'));
+          return;
         }
         next(err);
       });
@@ -72,14 +75,21 @@ module.exports.getUserByID = (req, res, next) => {
   userMy.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь по указанному _id не найден');
+        next(new NotFoundError('Пользователь по указанному _id не найден'));
+        return;
       }
       res.status(200).send({ user });
     })
     .catch((err) => {
       if (err.name === 'BadError') {
         next(new BadError('Переданы некорректные данные при создании карточки'));
+        return;
       }
+      if (err.name === 'NotAutorization') {
+        next(new NotAutorization());
+        return;
+      }
+      console.log(err.name);
       next(err);
     });
 };
@@ -93,13 +103,15 @@ module.exports.updateUser = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь по указанному _id не найден');
+        next(new NotFoundError('Пользователь по указанному _id не найден'));
+        return;
       }
       res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'BadError') {
         next(new BadError('Переданы некорректные данные при создании карточки'));
+        return;
       }
       next(err);
     });
@@ -118,7 +130,7 @@ module.exports.login = (req, res, next) => {
         res.send({ message: 'Проверка прошла успешно!' });
       })
       .catch(() => {
-        next(new NotAutorization(NotAutorization.message));
+        next(new NotAutorization());
       });
   }
   throw new BadError('Некорректно указан Email');

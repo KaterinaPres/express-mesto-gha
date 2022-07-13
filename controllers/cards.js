@@ -12,6 +12,7 @@ module.exports.createCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'BadError') {
         next(new BadError('Переданы некорректные данные при создании карточки'));
+        return;
       }
       next(err);
     });
@@ -21,7 +22,8 @@ module.exports.deleteCard = (req, res, next) => {
   cardMy.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка с указанным _id не найдена');
+        next(new NotFoundError('Карточка с указанным _id не найдена'));
+        return;
       }
       if (req.user._id.toString() !== card.owner.toString()) {
         throw new ForbiddenError(ForbiddenError.message);
@@ -36,6 +38,7 @@ module.exports.deleteCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'BadError') {
         next(new BadError('Переданы некорректные данные при создании карточки'));
+        return;
       }
       next(err);
     });
@@ -56,13 +59,15 @@ module.exports.likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Передан несуществующий _id карточки');
+        next(new NotFoundError('Передан несуществующий _id карточки'));
+        return;
       }
       res.status(200).send({ card });
     })
     .catch((err) => {
       if (err.name === 'BadError') {
         next(new BadError('Переданы некорректные данные при создании карточки'));
+        return;
       }
       next(err);
     });
@@ -76,13 +81,15 @@ module.exports.dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Передан несуществующий _id карточки');
+        next(new NotFoundError());
+        return;
       }
       res.status(200).send({ card });
     })
     .catch((err) => {
       if (err.name === 'BadError') {
         next(new BadError('Переданы некорректные данные при создании карточки'));
+        return;
       }
       next(err);
     });

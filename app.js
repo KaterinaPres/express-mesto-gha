@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+mongoose.connect('mongodb://localhost:27017/mestodb1', {
   useNewUrlParser: true,
   // useCreateIndex: true,
   // useFindAndModify: false
@@ -48,17 +48,33 @@ app.use('*', () => {
   throw new NotFoundError('Страница не была найдена');
 });
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
+  const { statusCode, message } = err;
+
+  if (statusCode === 401) {
+    res
+      .status(statusCode)
+      .send({
+        message,
+      });
+    console.error(err.stack);
+  } else {
+    next(err);
+  }
+});
+app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
   if (statusCode === 500) {
-    console.log(err.stack);
+    res
+      .status(statusCode)
+      .send({
+        message: statusCode === 500
+          ? 'На сервере произошла ошибка'
+          : message,
+      });
+    console.error(err.stack);
+  } else {
+    next(err);
   }
 });
 

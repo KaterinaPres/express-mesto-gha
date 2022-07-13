@@ -1,9 +1,9 @@
 class Mongo extends Error {
-  constructor(message) {
-    super(message);
+  constructor() {
+    super('Email уже занят');
     this.name = 'Mongo';
     this.statusCode = 409;
-    this.message = 'Email уже занят';
+    // this.message = 'Email уже занят';
   }
 }
 
