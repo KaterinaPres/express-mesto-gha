@@ -29,13 +29,11 @@ module.exports.updateAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'BadError') {
-        throw new BadError('Переданы некорректные данные при создании пользователя');
-      } else {
-        next(err);
+        next(new BadError('Переданы некорректные данные при создании карточки'));
       }
-    })
-    .catch(next);
-};
+      next(err);
+    });
+  };
 
 module.exports.getUser = (req, res, next) => {
   userMy.find({})
@@ -61,12 +59,10 @@ module.exports.createUser = (req, res, next) => {
           throw new Mongo(Mongo.message);
         }
         if (err.name === 'BadError') {
-          throw new BadError('Переданы некорректные данные при создании пользователя');
-        } else {
-          next(err);
+          next(new BadError('Переданы некорректные данные при создании карточки'));
         }
-      })
-      .catch(next);
+        next(err);
+      });
   } else {
     throw new BadError('Некорректно указан Email');
   }
@@ -82,13 +78,11 @@ module.exports.getUserByID = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'BadError') {
-        throw new BadError('Переданы некорректные данные');
-      } else {
-        next(err);
+        next(new BadError('Переданы некорректные данные при создании карточки'));
       }
-    })
-    .catch(next);
-};
+      next(err);
+    });
+  };
 
 module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
@@ -105,13 +99,11 @@ module.exports.updateUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'BadError') {
-        throw new BadError('Переданы некорректные данные при создании пользователя');
-      } else {
-        next(err);
+        next(new BadError('Переданы некорректные данные при создании карточки'));
       }
-    })
-    .catch(next);
-};
+      next(err);
+    });
+  };
 
 module.exports.login = (req, res, next) => {
   if (validator.isEmail(req.body.email)) {
@@ -126,9 +118,8 @@ module.exports.login = (req, res, next) => {
         res.send({ message: 'Проверка прошла успешно!' });
       })
       .catch(() => {
-        throw new NotAutorization(NotAutorization.message);
-      })
-      .catch(next);
+        next(new NotAutorization(NotAutorization.message));
+      });
   }
   throw new BadError('Некорректно указан Email');
 };
