@@ -10,8 +10,8 @@ module.exports.createCard = (req, res, next) => {
   cardMy.create({ name, link, owner: ownerMy })
     .then((card) => res.status(200).send({ card }))
     .catch((err) => {
-      if (err.name === 'NotFoundError') {
-        throw new NotFoundError('Переданы некорректные данные при создании карточки');
+      if (err.name === 'BadError') {
+        throw new BadError('Переданы некорректные данные при создании карточки');
       } else {
         next(err);
       }

@@ -68,7 +68,7 @@ module.exports.createUser = (req, res, next) => {
       })
       .catch(next);
   } else {
-    throw new NotAutorization('Некорректно указан Email');
+    throw new BadError('Некорректно указан Email');
   }
 };
 
