@@ -33,7 +33,7 @@ module.exports.updateAvatar = (req, res, next) => {
       }
       next(err);
     });
-  };
+};
 
 module.exports.getUser = (req, res, next) => {
   userMy.find({})
@@ -82,7 +82,7 @@ module.exports.getUserByID = (req, res, next) => {
       }
       next(err);
     });
-  };
+};
 
 module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
@@ -103,7 +103,7 @@ module.exports.updateUser = (req, res, next) => {
       }
       next(err);
     });
-  };
+};
 
 module.exports.login = (req, res, next) => {
   if (validator.isEmail(req.body.email)) {
