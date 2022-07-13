@@ -6,7 +6,7 @@ const {
 } = require('../controllers/cards');
 
 // const regUrl = "/https?:\/\/(www\.)?[-a-z0-9-._~:/?#@!$&'()*+,;=]+/;";
-router.post('/', celebrate({
+router.post('/cards', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().required().pattern(new RegExp(regUrl)),
@@ -14,7 +14,7 @@ router.post('/', celebrate({
 }), createCard);
 
 router.get('/cards', getCard);
-router.delete('/:cardId', celebrate({
+router.delete('/cards/:cardId', celebrate({
 
   params: Joi.object().keys({
     cardId: Joi.string().hex().length(24).required(),
@@ -24,7 +24,7 @@ router.delete('/:cardId', celebrate({
   }).unknown(true),
 }), deleteCard);
 
-router.put('/:cardId/likes', celebrate({
+router.put('/cards/:cardId/likes', celebrate({
   params: Joi.object().keys({
     cardId: Joi.string().hex().length(24).required(),
   }),
@@ -33,7 +33,7 @@ router.put('/:cardId/likes', celebrate({
   }).unknown(true),
 }), likeCard);
 
-router.delete('/:cardId/likes', celebrate({
+router.delete('/cards/:cardId/likes', celebrate({
   params: Joi.object().keys({
     cardId: Joi.string().hex().length(24).required(),
   }),

@@ -41,36 +41,21 @@ app.post('/signup', celebrate({
 }), createUser);
 
 app.use(auth);
-app.use(errors());
+
 app.use('/', routerUsersMy);
 app.use('/', routerCardsMy);
 app.use('*', () => {
-  throw new NotFoundError('Страница не была найдена');
+  throw new NotFoundError();
 });
-
+app.use(errors());
 app.use((err, req, res, next) => {
-  const { statusCode, message } = err;
+  const { statusCode = 500, message } = err;
 
-  if (statusCode === 401) {
+  if (statusCode !== 201 || statusCode !== 200) {
     res
       .status(statusCode)
       .send({
         message,
-      });
-    console.error(err.stack);
-  } else {
-    next(err);
-  }
-});
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  if (statusCode === 500) {
-    res
-      .status(statusCode)
-      .send({
-        message: statusCode === 500
-          ? 'На сервере произошла ошибка'
-          : message,
       });
     console.error(err.stack);
   } else {
