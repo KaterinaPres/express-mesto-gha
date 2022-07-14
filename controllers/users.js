@@ -2,20 +2,14 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 const userMy = require('../models/user');
 const { generateToken } = require('../token/jwt');
-require('dotenv').config();
-// const { BadError, NotFoundError, SomeError } = require('../err');
 const { MONGO_ERROR } = require('../token/MongoError');
 const BadError = require('../errors/BadError'); // 400
 const NotAutorization = require('../errors/NotAutorization'); // 401
 const NotFoundError = require('../errors/NotFoundError'); // 404
-const Mongo = require('../errors/Mongo'); // 409
-// const SomeError = require('../errors/SomeError');
+const Conflict = require('../errors/Conflict'); // 409
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  if (!avatar) {
-    throw new BadError('Переданы некорректные данные при создании пользователя');
-  }
   userMy.findByIdAndUpdate(
     req.user._id,
     { avatar },
@@ -24,6 +18,7 @@ module.exports.updateAvatar = (req, res, next) => {
     .then((user) => {
       if (!user) {
         next(new NotFoundError('Пользователь по указанному _id не найден'));
+        return;
       }
       res.status(200).send({ data: user });
     })
@@ -57,7 +52,7 @@ module.exports.createUser = (req, res, next) => {
       }))
       .catch((err) => {
         if (err.code === MONGO_ERROR) {
-          next(new Mongo(Mongo.message));
+          next(new Conflict(Conflict.message));
           return;
         }
         if (err.name === 'BadError') {
@@ -89,7 +84,6 @@ module.exports.getUserByID = (req, res, next) => {
         next(new NotAutorization());
         return;
       }
-      console.log(err.name);
       next(err);
     });
 };
@@ -129,9 +123,7 @@ module.exports.login = (req, res, next) => {
         });
         res.send({ message: 'Проверка прошла успешно!' });
       })
-      .catch(() => {
-        next(new NotAutorization());
-      });
+      .catch(next);
   }
   throw new BadError('Некорректно указан Email');
 };

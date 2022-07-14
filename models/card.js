@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { regMatch } = require('../token/MongoError');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -10,6 +11,11 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
+    validator: {
+      validate: {
+        match: [regMatch, 'Необходимо заполнить действительный URL-адрес'],
+      },
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -25,4 +31,5 @@ const cardSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
 module.exports = mongoose.model('card', cardSchema);

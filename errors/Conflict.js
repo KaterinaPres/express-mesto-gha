@@ -1,10 +1,10 @@
-class Mongo extends Error {
+class Conflict extends Error {
   constructor() {
     super('Email уже занят');
-    this.name = 'Mongo';
+    this.name = 'Conflict';
     this.statusCode = 409;
     // this.message = 'Email уже занят';
   }
 }
 
-module.exports = Mongo;
+module.exports = Conflict;

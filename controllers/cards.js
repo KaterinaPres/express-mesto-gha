@@ -10,7 +10,7 @@ module.exports.createCard = (req, res, next) => {
   cardMy.create({ name, link, owner: ownerMy })
     .then((card) => res.status(200).send({ card }))
     .catch((err) => {
-      if (err.name === 'BadError') {
+      if (err.name === 'ValidationError') {
         next(new BadError('Переданы некорректные данные при создании карточки'));
         return;
       }
@@ -19,29 +19,31 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  cardMy.findByIdAndRemove(req.params.cardId)
+  cardMy.findById(req.params.cardId)
+    .orFail(() => next(new NotFoundError('Карточка с указанным _id не найдена')))
     .then((card) => {
-      if (!card) {
-        next(new NotFoundError('Карточка с указанным _id не найдена'));
-        return;
-      }
       if (req.user._id.toString() !== card.owner.toString()) {
         throw new ForbiddenError(ForbiddenError.message);
       }
-
-      cardMy.deleteOne({ card })
-        .then(() => {
-          res.status(200).send({ message: 'Карточка удалена!' });
-        })
-        .catch(next);
+      cardMy.findByIdAndRemove(req.params.cardId)
+        .then(() => res.send({ data: card }));
     })
     .catch((err) => {
-      if (err.name === 'BadError') {
+      if (err.errors) {
+        const errorKeys = Object.keys(err.errors);
+        const error = err.errors[errorKeys[0]];
+        if (err.name === 'ValidationError') {
+          next(new BadError(`Карточка с указанным _id не найдена. ${error}`));
+          return;
+        }
+      }
+      if (err.name === 'CastError') {
         next(new BadError('Переданы некорректные данные при создании карточки'));
         return;
       }
-      next(err);
-    });
+      next();
+    })
+    .catch(next);
 };
 
 module.exports.getCard = (req, res, next) => {
@@ -65,7 +67,7 @@ module.exports.likeCard = (req, res, next) => {
       res.status(200).send({ card });
     })
     .catch((err) => {
-      if (err.name === 'BadError') {
+      if (err.name === 'ValidationError') {
         next(new BadError('Переданы некорректные данные при создании карточки'));
         return;
       }
@@ -87,7 +89,7 @@ module.exports.dislikeCard = (req, res, next) => {
       res.status(200).send({ card });
     })
     .catch((err) => {
-      if (err.name === 'BadError') {
+      if (err.name === 'ValidationError') {
         next(new BadError('Переданы некорректные данные при создании карточки'));
         return;
       }

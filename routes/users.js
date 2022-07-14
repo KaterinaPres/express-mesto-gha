@@ -5,17 +5,13 @@ const {
   getUser, getUserMe, getUserByID, updateUser, updateAvatar,
 } = require('../controllers/users');
 
-// const regUrl = "/https?:\/\/(www\.)?[-a-z0-9-._~:/?#@!$&'()*+,;=]+/;";
-
 router.get('/users', getUser);
 router.get('/users/me', getUserMe);
-
 router.get('/users/:userId', celebrate({
-  params: Joi.object().keys({ userId: Joi.string().hex().length(24) }),
-  headers: Joi.object().keys({ authorization: Joi.string() }).unknown(true),
+  params: Joi.object().keys({
+    userId: Joi.string().hex().length(24),
+  }),
 }), getUserByID);
-
-// router.post('/users', createUser);
 
 router.patch('/users/me', celebrate({
   body: Joi.object().keys({

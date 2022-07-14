@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const { default: isEmail } = require('validator/lib/isEmail');
+const { regMatch } = require('../token/MongoError');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -20,12 +22,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-    match: [/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/, 'Некорректно введен URL'],
+    match: [regMatch, 'Пожалуйста, заполните действительный URL-адрес'],
   },
   email: {
     type: String,
     required: true,
     unique: true,
+    validator: {
+      validate: {
+        validator: (v) => isEmail(v),
+        message: 'Заполните email в правльном формате',
+      },
+    },
   },
   password: {
     type: String,

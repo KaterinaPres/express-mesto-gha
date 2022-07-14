@@ -8,8 +8,10 @@ const routerCardsMy = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const NotFoundError = require('./errors/NotFoundError');
 const auth = require('./middlewares/auth');
+const { regUrl } = require('./token/MongoError');
+
 require('dotenv').config();
-// Слушаем 3000 порт
+
 const { PORT = 3000 } = process.env;
 const app = express();
 
@@ -17,10 +19,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-mongoose.connect('mongodb://localhost:27017/mestodb1', {
+mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
-  // useCreateIndex: true,
-  // useFindAndModify: false
 });
 
 app.post('/signin', celebrate({
@@ -34,7 +34,7 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/),
+    avatar: Joi.string().pattern(new RegExp(regUrl)),
     email: Joi.string().email().required(),
     password: Joi.string().min(3).required(),
   }),
@@ -49,18 +49,12 @@ app.use('*', () => {
 });
 app.use(errors());
 app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-
-  if (statusCode !== 201 || statusCode !== 200) {
-    res
-      .status(statusCode)
-      .send({
-        message,
-      });
-    console.error(err.stack);
-  } else {
-    next(err);
+  if (err.statusCode) {
+    res.status(err.statusCode).send({ message: err.message });
+    return;
   }
+  res.status(500).send({ message: 'Что-то пошло не так' });
+  next();
 });
 
 app.listen(PORT, () => {
