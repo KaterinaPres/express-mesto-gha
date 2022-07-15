@@ -6,7 +6,7 @@ const { celebrate, Joi, errors } = require('celebrate');
 const routerUsersMy = require('./routes/users');
 const routerCardsMy = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
-const NotFoundError = require('./errors/NotFoundError');
+const ForbiddenError = require('./errors/ForbiddenError');
 const auth = require('./middlewares/auth');
 const { regUrl } = require('./token/MongoError');
 
@@ -45,7 +45,7 @@ app.use(auth);
 app.use('/', routerUsersMy);
 app.use('/', routerCardsMy);
 app.use('*', () => {
-  throw new NotFoundError();
+  throw new ForbiddenError();
 });
 app.use(errors());
 app.use((err, req, res, next) => {
