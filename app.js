@@ -6,7 +6,6 @@ const { celebrate, Joi, errors } = require('celebrate');
 const routerUsersMy = require('./routes/users');
 const routerCardsMy = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
-// const ForbiddenError = require('./errors/ForbiddenError');
 const NotFoundError = require('./errors/NotFoundError');
 const auth = require('./middlewares/auth');
 const { regUrl } = require('./token/MongoError');
@@ -41,27 +40,23 @@ app.post('/signup', celebrate({
   }),
 }), createUser);
 
-
 app.use(auth);
-
 app.use('/', routerUsersMy);
 app.use('/', routerCardsMy);
 app.use('*', () => {
   throw new NotFoundError('Страница не найдена');
 });
-app.use(errors()); 
+
+app.use((req, res, next) => next(new NotFoundError('Страница не найдена')));
+
+app.use(errors());
 app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
-  if (statusCode === 500) {
-    console.log(err.stack);
+  if (err.statusCode) {
+    res.status(err.statusCode).send({ message: err.message });
+    return;
   }
+  res.status(500).send({ message: 'Что-то пошло не так' });
+  next();
 });
 
 app.listen(PORT, () => {
