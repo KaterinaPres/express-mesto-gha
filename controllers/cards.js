@@ -19,32 +19,55 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  cardMy.findById(req.params.cardId)
-    .orFail(() => next(new NotFoundError('Карточка с указанным _id не найдена')))
+  // cardMy.findById(req.params.cardId)
+  cardMy.findByIdAndRemove(req.params.cardId)
     .then((card) => {
+      if (!card) {
+        next(new NotFoundError('Карточка с указанным _id не найдена'));
+        return;
+      }
       if (req.user._id.toString() !== card.owner.toString()) {
         throw new ForbiddenError(ForbiddenError.message);
       }
-      cardMy.findByIdAndRemove(req.params.cardId)
-        .then(() => res.send({ data: card }));
+      cardMy.deleteOne({ card })
+        .then(() => {
+          res.status(200).send({ message: 'Карточка удалена!' });
+        })
+        .catch(next);
     })
     .catch((err) => {
-      if (err.errors) {
-        const errorKeys = Object.keys(err.errors);
-        const error = err.errors[errorKeys[0]];
-        if (err.name === 'ValidationError') {
-          next(new BadError(`Карточка с указанным _id не найдена. ${error}`));
-          return;
-        }
-      }
-      if (err.name === 'CastError') {
+      if (err.name === 'BadError') {
         next(new BadError('Переданы некорректные данные при создании карточки'));
         return;
       }
-      next();
-    })
-    .catch(next);
+      next(err);
+    });
 };
+//     .orFail(() => next(new NotFoundError('Карточка с указанным _id не найдена')))
+//     .then((card) => {
+//       if (req.user._id.toString() !== card.owner.toString()) {
+//         throw new ForbiddenError(ForbiddenError.message);
+//       }
+//       cardMy.findByIdAndRemove(req.params.cardId)
+//         .then(() => res.send({ data: card }));
+//     })
+//     .catch((err) => {
+//       if (err.errors) {
+//         const errorKeys = Object.keys(err.errors);
+//         const error = err.errors[errorKeys[0]];
+//         if (err.name === 'ValidationError') {
+//           next(new BadError(`Карточка с указанным _id не найдена. ${error}`));
+//           return;
+//         }
+//       }
+//       if (err.name === 'CastError') {
+//         next(new BadError('Переданы некорректные данные при создании карточки'));
+//         return;
+//       }
+//       next();
+//     })
+//     .catch(next);
+// };
 
 module.exports.getCard = (req, res, next) => {
   cardMy.find({})
