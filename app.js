@@ -7,6 +7,7 @@ const routerUsersMy = require('./routes/users');
 const routerCardsMy = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const ForbiddenError = require('./errors/ForbiddenError');
+const NotFoundError = require('./errors/NotFoundError');
 const auth = require('./middlewares/auth');
 const { regUrl } = require('./token/MongoError');
 
@@ -39,6 +40,10 @@ app.post('/signup', celebrate({
     password: Joi.string().min(3).required(),
   }),
 }), createUser);
+
+app.use('*', () => {
+  throw new NotFoundError();
+});
 
 app.use(auth);
 
