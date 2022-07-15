@@ -51,12 +51,12 @@ app.use((req, res, next) => next(new NotFoundError('Страница не най
 
 app.use(errors());
 app.use((err, req, res, next) => {
-  if (err.statusCode) {
+  if (err.statusCode && err.statusCode !== 500) {
     res.status(err.statusCode).send({ message: err.message });
-    return;
+  } else {
+    res.status(500).send({ message: 'Что-то пошло не так' });
   }
-  res.status(500).send({ message: 'Что-то пошло не так' });
-  next();
+  next(err);
 });
 
 app.listen(PORT, () => {
