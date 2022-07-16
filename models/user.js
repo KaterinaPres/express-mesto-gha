@@ -53,7 +53,7 @@ userSchema.statics.findUser = function findUser(email, password) {
       if (!user) { return Promise.reject(new NotAutorization('Неверные почта или пароль')); }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
-          if (!matched) { return Promise.reject(new Error('Неверные почта или пароль')); }
+          if (!matched) { return Promise.reject(new NotAutorization('Неверные почта или пароль')); }
           return user;
         });
     });
