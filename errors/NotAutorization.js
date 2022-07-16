@@ -1,6 +1,12 @@
 class NotAutorization extends Error {
-  constructor() {
-    super('Необходима авторизация');
+  constructor(message) {
+    let messageText;
+    if (typeof message === 'undefined') {
+      messageText = 'Необходима авторизация';
+    } else {
+      messageText = message;
+    }
+    super(messageText);
     this.name = 'NotAutorization';
     this.statusCode = 401;
   }

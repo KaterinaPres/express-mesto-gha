@@ -1,6 +1,12 @@
 class NotFoundError extends Error {
-  constructor() {
-    super('Карточка или пользователь не найден, или был запрошен несуществующий роут');
+  constructor(message) {
+    let messageText;
+    if (typeof message === 'undefined') {
+      messageText = 'Карточка или пользователь не найден, или был запрошен несуществующий роут';
+    } else {
+      messageText = message;
+    }
+    super(messageText);
     this.name = 'NotFoundError';
     this.statusCode = 404;
   }

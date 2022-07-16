@@ -27,7 +27,10 @@ module.exports.deleteCard = (req, res, next) => {
         return;
       }
       cardMy.findByIdAndRemove(req.params.cardId)
-        .then(() => res.send({ data: card }));
+        .then(() => res.send({ data: card }))
+        .catch((err) => {
+          throw err;
+        });
     })
     .catch((err) => {
       if (err.errors) {
@@ -42,7 +45,7 @@ module.exports.deleteCard = (req, res, next) => {
         next(new BadError('Переданы некорректные данные при создании карточки'));
         return;
       }
-      next();
+      next(err);
     })
     .catch(next);
 };
